@@ -16,13 +16,15 @@ namespace StripeApp
 
         public void ProcessRequest(HttpContext context)
         {
+            Console.WriteLine("process request invloked");
             var endpointSecret = "whsec_c368b9f9a6a238065335c0b6e5c2ace8024dac48e844012faea9b045712c42d8";
             var json = new StreamReader(context.Request.InputStream).ReadToEnd();
             var signature = context.Request.Headers["Stripe-Signature"];
 
             try
             {
-                var stripeEvent = EventUtility.ConstructEvent(json, signature, endpointSecret);
+                Console.WriteLine($"Stripe Signature: {signature}");
+                var stripeEvent = EventUtility.ConstructEvent( json, context.Request.Headers["Stripe-Signature"], endpointSecret );
                 switch (stripeEvent.Type)
                 {
                     case Events.CustomerCreated:
@@ -37,6 +39,10 @@ namespace StripeApp
             catch(StripeException ex)
             {
                 Console.WriteLine($"exe: {ex.Message}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
             }
         }
 
