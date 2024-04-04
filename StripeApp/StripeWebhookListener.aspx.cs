@@ -11,15 +11,23 @@ namespace StripeApp
 {
     public partial class StripeWebhookListener : System.Web.UI.Page
     {
-        private string webhookSigningSecret = "whsec_c368b9f9a6a238065335c0b6e5c2ace8024dac48e844012faea9b045712c42d8";
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(Request.HttpMethod == "POST")
+            StripeConfiguration.ApiKey = "sk_test_51OhdtJAGzritdW5euX6J8dDDG9i0sr04MbIoMPJKlenvnpQZEm4S6moGK4MlzycjAyQVOfUYJJV1izGdvMVfT7Gr004HkrtEAb";
+            if (Request.HttpMethod == "POST")
             {
-                var json = new StreamReader(Request.InputStream).ReadToEnd();
-                try 
+                try
                 {
-                    var stripeEvent = EventUtility.ParseEvent(json);
+                    string requstBody;
+                    using(var reader = new StreamReader(Request.InputStream))
+                    {
+                        requstBody = reader.ReadToEnd();
+                    }
+
+                    Console.WriteLine("Received Webhook Event: ");
+                    Console.WriteLine(requstBody);
+
+                    var stripeEvent = EventUtility.ParseEvent(requstBody);
 
                     //handling the event
                     switch (stripeEvent.Type)
